@@ -179,7 +179,7 @@ function Clients({ site, update, setSite, onError }) {
       <div className="panel-head">
         <div>
           <h2>Client logos</h2>
-          <p>These scroll in the "Trusted by" strip under the hero. New uploads go live straight away; edits, re-ordering and removals go live when you save.</p>
+          <p>These scroll in the "Our Clients" section. New uploads go live straight away; edits, re-ordering and removals go live when you save.</p>
         </div>
       </div>
       <AddClient onAdded={mergeSaved} onError={onError} />

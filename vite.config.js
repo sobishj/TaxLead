@@ -18,7 +18,7 @@ export default defineConfig({
         name: 'Taxlead Business Solutions',
         short_name: 'Taxlead',
         description:
-          'Business incorporation, tax planning, accounting, payroll, statutory compliance and virtual CFO services — Kochi, India.',
+          'Professional Support that propels your business into greater heights',
         theme_color: '#0a2540',
         background_color: '#ffffff',
         display: 'standalone',

@@ -1,16 +1,19 @@
 // All site content lives here so it can be edited without touching layout code.
+// Wording is taken from the original www.taxlead.in site.
 
 export const company = {
-  name: 'Taxlead Business Solutions',
+  name: 'TaxLead',
   legalName: 'Taxlead Business Solutions Private Limited',
-  tagline: 'Professional support that propels your business to greater heights.',
+  tagline: 'Professional Support that propels your business into greater heights',
+  taglineMore:
+    'Managed by a team of Experts and Strategic Decision Makers. Your Trusted partner in Labour Law, HR Operations, Corporate Laws and Other relevant statutes.',
   email: 'mail@taxlead.in',
-  phone: { label: '+91 484 406 1110', href: 'tel:+914844061110' },
+  phone: { label: '+91 484 40 61110', href: 'tel:+914844061110' },
   mobiles: [
-    { label: '+91 98472 60111', href: 'tel:+919847260111' },
-    { label: '+91 98476 20111', href: 'tel:+919847620111' },
+    { label: '+91 984 72 60111', href: 'tel:+919847260111' },
+    { label: '+91 984 76 20111', href: 'tel:+919847620111' },
   ],
-  address: ['XXI/820, East Fort Gate', 'Tripunithura, Kochi – 682 301', 'Kerala, India'],
+  address: ['XXI/820, East Fort Gate, Tripunithura,', 'Kochi - 682 301 India'],
   mapUrl: 'https://www.google.com/maps/search/?api=1&query=East+Fort+Gate+Tripunithura+Kochi+682301',
   profilePdf: '/Taxlead-Company-Profile.pdf',
   social: [
@@ -21,81 +24,88 @@ export const company = {
 }
 
 export const nav = [
-  { id: 'about', label: 'About' },
+  { id: 'top', label: 'Home' },
+  { id: 'about', label: 'About Us' },
   { id: 'services', label: 'Services' },
-  { id: 'exclusive', label: 'Exclusive' },
-  { id: 'team', label: 'Team' },
-  { id: 'contact', label: 'Contact' },
+  { id: 'contact', label: 'Contact Us' },
 ]
 
-export const highlights = [
-  { value: 'End-to-end', label: 'From incorporation to ongoing compliance' },
-  { value: 'India + ME', label: 'Clients across India and the Middle East' },
-  { value: 'CA · Law · MBA', label: 'Multidisciplinary professional team' },
-]
-
+// The four timeline cards from the original "What We Do" section, in order.
+// `anim` is the original scroll animation: cards slide in from the left or right; Exclusive Services zooms in.
 export const serviceGroups = [
   {
     id: 'start',
     title: 'Be in Business',
-    blurb: 'Plan, structure and launch your venture on solid legal and financial ground.',
+    icon: 'report',
+    anim: 'fade-right',
     items: [
-      { icon: 'report', title: 'Project Reports', text: 'Detailed project reports that let you plan a business properly before you launch it.' },
-      { icon: 'building', title: 'Business Incorporation', text: 'Choose the right structure — private limited company, LLP, partnership or sole proprietorship — and get it registered.' },
-      { icon: 'funding', title: 'Business Funding Support', text: 'Identify the funding model that best fits your stage and plans, and prepare to raise it.' },
-      { icon: 'shield', title: 'Intellectual Property', text: 'Protect your brand and ideas through trademark, patent and copyright registration.' },
-      { icon: 'badge', title: 'Licenses & Registrations', text: 'FSSAI, MSME/Udyam, SEZ, Startup India registration, Import Export Code and more.' },
-      { icon: 'signature', title: 'Digital Signatures', text: 'Class-3 digital signature certificates for filings, tenders and e-governance.' },
+      { title: 'Project Reports', text: 'Know your business before you actually start it' },
+      { title: 'Business Incorporation', text: 'Get the best legal form for your business viz. Company, LLP, Partnership, Proprietorship etc.' },
+      { title: 'Business Funding Support', text: 'Guidance to find the most suitable funding model.' },
+      { title: 'Intellectual Property Protection', text: 'Protect your Trademark, Patent, Copyright etc.' },
+      { title: 'Business Licenses & Registrations', text: 'FSSAI, MSME, SEZ, Start Ups, IE Code etc.' },
+      { title: 'Digital Signatures' },
     ],
   },
   {
     id: 'manage',
     title: 'Manage',
-    blurb: 'Keep books, people and filings in order so you can focus on growth.',
+    icon: 'ledger',
+    anim: 'fade-left',
     items: [
-      { icon: 'percent', title: 'Tax Planning', text: 'Lawful strategies that keep your business and personal tax position efficient.' },
-      { icon: 'ledger', title: 'Accounting & Payroll', text: 'Bookkeeping to IFRS / Ind AS, finalisation of accounts and end-to-end payroll with an employee self-service portal.' },
-      { icon: 'check', title: 'Statutory Filing & Compliance', text: 'Income Tax, GST, PF, ESI, labour laws, company law and SEZ compliance — filed on time.' },
-      { icon: 'search', title: 'Audits', text: 'Internal, concurrent, statutory, tax and stock audits, plus due-diligence reviews.' },
-      { icon: 'umbrella', title: 'Insurance', text: 'Business and personal insurance cover matched to your actual risks.' },
+      { title: 'Tax Planning', text: 'Strategies to ensure the maximum tax efficiency' },
+      {
+        title: 'Accounting and Payroll Services',
+        text: 'IFRS /Ind AS based Book keeping and Finalization of Accounts. End to end Payroll processing with an option of Employee Self Service Portal.',
+      },
+      {
+        title: 'Statutory Filing and compliances',
+        text: 'Ensure the Law compliance under various Acts viz. Income Tax, GST, PF, ESI, Labor Law, Company Law, SEZ Forms etc.',
+      },
+      {
+        title: 'Various Audits',
+        text: 'Performance of Internal Audit, Concurrent Audit, Statutory Audit, Tax Audit, Stock Audit, Due diligence etc.',
+      },
+      { title: 'Insurance', text: 'Business and Personal Insurances' },
     ],
   },
   {
     id: 'insight',
     title: 'Management Services',
-    blurb: 'Turn your numbers into decisions with reporting and analysis built for owners.',
+    icon: 'chart',
+    anim: 'fade-right',
     items: [
-      { icon: 'chart', title: 'MIS Reports', text: 'Clear, periodic management reports that show how the business is really doing.' },
-      { icon: 'target', title: 'Budgeting & Forecasting', text: 'Realistic budgets and rolling forecasts to plan cash, hiring and investment.' },
-      { icon: 'pulse', title: 'Business Analytics', text: 'Data-driven insight into sales, margins, costs and customer behaviour.' },
-      { icon: 'grid', title: 'SWOT Analysis', text: 'A structured look at strengths, weaknesses, opportunities and threats.' },
-      { icon: 'scissors', title: 'Cost Management', text: 'Find and remove cost leakages without hurting quality or growth.' },
+      { title: 'MIS Reports' },
+      { title: 'Budgeting & Forecasting' },
+      { title: 'Business Analytics' },
+      { title: 'SWOT Analysis' },
+      { title: 'Cost Management' },
+    ],
+  },
+  {
+    id: 'exclusive',
+    title: 'Exclusive Services',
+    icon: 'rocket',
+    anim: 'zoom-in',
+    items: [
+      {
+        title: 'eCFO Programme',
+        text: 'A Virtual CFO programme designed by Taxlead which takes over the role of the CFO in your organization in a cost effective way.',
+      },
+      { title: 'Business Process Outsourcing', text: 'Cost effective outsourcing services with supreme quality.' },
+      {
+        title: 'Tailor-made Profit Maximization Programmes',
+        text: 'Our business analytics team develops, implements and monitors a customized programme which ensures the optimum growth of your business.',
+      },
     ],
   },
 ]
 
-export const exclusive = [
-  {
-    icon: 'cfo',
-    title: 'eCFO Programme',
-    text: 'A virtual Chief Financial Officer for your business — strategic finance leadership at a fraction of the cost of a full-time hire.',
-  },
-  {
-    icon: 'layers',
-    title: 'Business Process Outsourcing',
-    text: 'Hand over finance, HR and compliance processes to a team that puts quality first, so your people can focus on the core business.',
-  },
-  {
-    icon: 'rocket',
-    title: 'Profit Maximisation Programmes',
-    text: 'Tailor-made growth plans built and monitored by our analytics team to lift revenue and protect margins.',
-  },
-]
+export const about =
+  "Taxlead Business Solutions Private Limited is one of the leading Business Services and Consulting Companies in Kochi. The company has been providing comprehensive business solutions ranging from Incorporation of business entity to total management of the business including statutory filing and compliances. The company's clientele spreads over India and the Middle East countries."
 
-export const industries = [
-  'Information Technology', 'ITeS', 'BPO', 'Construction', 'Retail',
-  'Banking', 'Healthcare', 'Logistics', 'Manufacturing', 'Hospitality',
-]
+export const teamIntro =
+  'Our team comprises of well experienced professionals including CAs, Lawyers and MBAs who have got expertise in the respective areas. The team works to ensure the complete satisfaction of the client.'
 
 export const team = [
   { name: 'Soyson Joseph Thonakkara', role: 'Director' },
@@ -103,17 +113,12 @@ export const team = [
   { name: 'CA. A K Krishna Warrier FCA', role: 'Independent Director' },
 ]
 
-export const stats = [
-  { value: '3', label: 'Service pillars — start, manage and grow' },
-  { value: String(serviceGroups.reduce((n, g) => n + g.items.length, 0) + exclusive.length), label: 'Services under one roof' },
-  { value: String(industries.length), label: 'Industries served' },
-  { value: '2', label: 'Regions — India and the Middle East' },
-]
+export const clientsIntro =
+  'Taxlead has got clients from various industries namely Information Technology, ITeS, Business Process Outsourcing, Construction, Retail, Banking, Healthcare, Logistics, Manufacturing, Hospitality etc.'
 
-export const process = [
-  { title: 'Understand', text: 'We start with a conversation about your business, your stage and what is slowing you down.' },
-  { title: 'Plan', text: 'You get a clear scope, timeline and fee — with the right structure, filings and reports mapped out.' },
-  { title: 'Run', text: 'Our team handles the work and the deadlines, and keeps you posted with simple, regular reporting.' },
+export const industries = [
+  'Information Technology', 'ITeS', 'Business Process Outsourcing', 'Construction', 'Retail',
+  'Banking', 'Healthcare', 'Logistics', 'Manufacturing', 'Hospitality',
 ]
 
 // Shown only in local development (`npm run dev`), where the edge function that injects real clients isn't running.

@@ -1,30 +1,53 @@
 import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon.jsx'
 import Gradient from './Gradient.jsx'
-import { company, nav, serviceGroups, exclusive, industries, team, stats, process, sampleClients } from './data.js'
+import { company, nav, serviceGroups, about, teamIntro, team, clientsIntro, sampleClients } from './data.js'
 
 /* ---------- hooks ---------- */
 
-// Fades sections in as they scroll into view.
-function useReveal() {
+// Scroll animations modelled on the original site (AOS): elements with data-anim="fade-right | fade-left |
+// zoom-in | fade-up" animate whenever they come into view, and reset once fully off screen so they play
+// again next time. Clicking a menu link replays the animations of the section it jumps to.
+function useScrollAnimations() {
   useEffect(() => {
-    const els = document.querySelectorAll('.reveal')
-    if (!('IntersectionObserver' in window)) {
+    const els = [...document.querySelectorAll('[data-anim]')]
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
       els.forEach((el) => el.classList.add('in'))
       return
     }
     const io = new IntersectionObserver(
       (entries) =>
         entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add('in')
-            io.unobserve(e.target)
-          }
+          if (e.isIntersecting && e.intersectionRatio >= 0.12) e.target.classList.add('in')
+          else if (!e.isIntersecting) e.target.classList.remove('in')
         }),
-      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' },
+      { threshold: [0, 0.12] },
     )
     els.forEach((el) => io.observe(el))
-    return () => io.disconnect()
+
+    const replay = (ev) => {
+      const link = ev.target.closest('a[href^="#"]')
+      const target = link && link.getAttribute('href').length > 1 && document.querySelector(link.getAttribute('href'))
+      if (!target) return
+      const section = target.closest('section') || target
+      const items = [...section.querySelectorAll('[data-anim]')]
+      if (section.matches('[data-anim]')) items.push(section)
+      items.forEach((el) => {
+        // Jump back to the start state instantly (no fade-out), so the entrance plays again from scratch.
+        el.classList.add('anim-reset')
+        el.classList.remove('in')
+        void el.offsetWidth
+        el.classList.remove('anim-reset')
+        // Re-observing reports the element's current visibility, which re-adds `in` for anything on screen.
+        io.unobserve(el)
+        io.observe(el)
+      })
+    }
+    document.addEventListener('click', replay)
+    return () => {
+      io.disconnect()
+      document.removeEventListener('click', replay)
+    }
   }, [])
 }
 
@@ -91,24 +114,26 @@ function Header({ canInstall, onInstall }) {
     document.body.style.overflow = open ? 'hidden' : ''
   }, [open])
 
+  const links = nav.filter((n) => n.id !== 'contact')
+
   return (
     <header className={`header ${scrolled ? 'scrolled' : ''}`}>
       <div className="container header-inner">
-        <a href="#top" className="brand" aria-label="Taxlead home" onClick={() => setOpen(false)}>
+        <a href="#top" className="brand" aria-label="Taxlead home" onClick={() => setOpen(false)} data-anim="fade-right">
           <Logo />
         </a>
-        <nav className="nav-links" aria-label="Primary">
-          {nav.map((n) => (
+        <nav className="nav-links" aria-label="Primary" data-anim="fade-left">
+          {links.map((n) => (
             <a key={n.id} href={`#${n.id}`}>{n.label}</a>
           ))}
         </nav>
-        <div className="header-actions">
+        <div className="header-actions" data-anim="fade-left">
           {canInstall && (
             <button className="btn btn-quiet btn-sm hide-sm" onClick={onInstall}>
               Install app <Arrow />
             </button>
           )}
-          <a href="#contact" className="btn btn-dark btn-sm hide-sm">Contact us <Arrow /></a>
+          <a href="#contact" className="btn btn-dark btn-sm hide-sm">Contact Us <Arrow /></a>
           <button
             className="menu-btn"
             aria-label={open ? 'Close menu' : 'Open menu'}
@@ -122,12 +147,12 @@ function Header({ canInstall, onInstall }) {
 
       <div className={`sheet ${open ? 'open' : ''}`} onClick={() => setOpen(false)}>
         <nav className="sheet-panel" aria-label="Mobile" onClick={(e) => e.stopPropagation()}>
-          {nav.map((n) => (
+          {links.map((n) => (
             <a key={n.id} href={`#${n.id}`} onClick={() => setOpen(false)}>
               {n.label} <Arrow />
             </a>
           ))}
-          <a href="#contact" className="btn btn-primary" onClick={() => setOpen(false)}>Contact us <Arrow /></a>
+          <a href="#contact" className="btn btn-primary" onClick={() => setOpen(false)}>Contact Us <Arrow /></a>
           {canInstall && (
             <button className="btn btn-quiet" onClick={() => { setOpen(false); onInstall() }}>
               <Icon name="install" size={18} /> Install app
@@ -140,47 +165,37 @@ function Header({ canInstall, onInstall }) {
 }
 
 function Hero() {
-  const steps = [
-    { icon: 'building', label: 'Company incorporated', meta: 'Private Limited' },
-    { icon: 'check', label: 'GST & TDS returns', meta: 'Filed on time' },
-    { icon: 'ledger', label: 'Payroll processed', meta: 'PF · ESI · PT' },
-    { icon: 'chart', label: 'MIS report', meta: 'Ready to review' },
-  ]
+  const compliance = ['Income Tax', 'GST', 'PF', 'ESI', 'Company Law']
   return (
     <section className="hero" id="top">
       <div className="hero-gradient" aria-hidden="true">
         <Gradient />
       </div>
       <div className="container hero-grid">
-        <div className="hero-copy">
-          <p className="hero-eyebrow">Tax · Compliance · Advisory — Kochi, India &amp; the Middle East</p>
-          <h1>
-            Business infrastructure to start, run and grow your company.{' '}
-            <span className="h1-sub">
-              Incorporate, file taxes, run payroll and stay compliant — with one team handling it all.
-            </span>
-          </h1>
+        <div className="hero-copy" data-anim="fade-right">
+          <p className="hero-eyebrow">{company.legalName}</p>
+          <h1>{company.tagline}</h1>
+          <p className="lead">{company.taglineMore}</p>
           <div className="hero-ctas">
-            <a href="#contact" className="btn btn-primary">Get started <Arrow /></a>
+            <a href="#exclusive" className="btn btn-primary">Exclusive Services <Arrow /></a>
             <a href={company.profilePdf} className="btn btn-quiet" target="_blank" rel="noopener">
-              Company profile <Arrow />
+              Download Our Profile <Arrow />
             </a>
           </div>
         </div>
 
-        <div className="hero-visual" aria-hidden="true">
+        <div className="hero-visual" aria-hidden="true" data-anim="fade-left">
           <div className="mock dash">
-            <div className="mock-bar"><i /><i /><i /><span>taxlead · compliance</span></div>
+            <div className="mock-bar"><i /><i /><i /><span>taxlead.in</span></div>
             <div className="dash-body">
               <div className="dash-head">
-                <div><small>This quarter</small><strong>All filings on track</strong></div>
-                <span className="pill ok">Healthy</span>
+                <div><small>Manage</small><strong>Statutory Filing and compliances</strong></div>
               </div>
               <ul className="dash-list">
-                {steps.map((s) => (
-                  <li key={s.label}>
-                    <span className="dl-ic"><Icon name={s.icon} size={16} /></span>
-                    <span className="dl-text"><strong>{s.label}</strong><small>{s.meta}</small></span>
+                {compliance.map((s) => (
+                  <li key={s}>
+                    <span className="dl-ic"><Icon name="check" size={16} /></span>
+                    <span className="dl-text"><strong>{s}</strong></span>
                     <span className="dl-ok"><Icon name="tick" size={13} strokeWidth="2.6" /></span>
                   </li>
                 ))}
@@ -191,14 +206,103 @@ function Hero() {
             <div className="phone-notch" />
             <div className="phone-body">
               <span className="phone-ic"><Icon name="cfo" size={20} /></span>
-              <strong>Your eCFO</strong>
-              <small>Monthly review is ready</small>
+              <strong>eCFO Programme</strong>
+              <small>A Virtual CFO programme designed by Taxlead</small>
               <div className="phone-chart">
                 {[38, 52, 46, 64, 58, 76, 88].map((h, i) => <i key={i} style={{ height: `${h}%` }} />)}
               </div>
-              <span className="phone-btn">Open report</span>
+              <span className="phone-btn">Exclusive Services</span>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Services() {
+  return (
+    <section className="section" id="services">
+      <div className="container">
+        <div className="section-head center" data-anim="zoom-in">
+          <span className="kicker">Our Services</span>
+          <h2>What We Do</h2>
+        </div>
+
+        <ol className="timeline">
+          {serviceGroups.map((g, i) => (
+            <li
+              key={g.id}
+              id={g.id}
+              className={`tl-item ${i % 2 ? 'right' : 'left'}`}
+              data-anim={g.anim}
+              style={{ '--row': i + 1 }}
+            >
+              <span className="tl-dot" aria-hidden="true">{i + 1}</span>
+              <article className="tl-card">
+                <span className="tl-icon" aria-hidden="true"><Icon name={g.icon} size={28} /></span>
+                <h3>{g.title}</h3>
+                <ul className="tl-list">
+                  {g.items.map((s, j) => (
+                    <li key={s.title} style={{ '--j': j }}>
+                      <span className="tl-tick" aria-hidden="true"><Icon name="tick" size={12} strokeWidth="3" /></span>
+                      <div>
+                        <strong>{s.title}</strong>
+                        {s.text && <p>{s.text}</p>}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  )
+}
+
+function About() {
+  return (
+    <section className="section tinted" id="about">
+      <div className="container about-grid">
+        <div data-anim="fade-right">
+          <span className="kicker">Taxlead Business Solutions</span>
+          <h2>About Us</h2>
+        </div>
+        <div data-anim="zoom-in">
+          <p className="lead">{about}</p>
+          <a href={company.profilePdf} className="btn btn-primary" target="_blank" rel="noopener">
+            Download Our Profile <Arrow />
+          </a>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Team() {
+  const initials = (n) =>
+    n.replace(/^CA\.\s*/, '').split(' ').filter((w) => /^[A-Z][a-z]/.test(w)).slice(0, 2).map((w) => w[0]).join('')
+  return (
+    <section className="team-band" id="team">
+      <div className="band-glow" aria-hidden="true" />
+      <div className="container">
+        <div className="section-head" data-anim="zoom-in">
+          <span className="kicker on-dark">CAs · Lawyers · MBAs</span>
+          <h2>Our Team</h2>
+          <p className="lead">{teamIntro}</p>
+        </div>
+        <div className="team">
+          {team.map((m, i) => (
+            <article key={m.name} className="member" data-anim="zoom-in" style={{ '--delay': `${i * 120}ms` }}>
+              <span className="avatar">{initials(m.name)}</span>
+              <div>
+                <h3>{m.name}</h3>
+                <p>{m.role}</p>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>
@@ -235,226 +339,29 @@ function ClientMarquee() {
   }
 
   return (
-    <section className="clients" aria-label="Our clients">
-      <div className="container">
-        {settings?.marqueeTitle !== '' && (
-          <p className="clients-title">{settings?.marqueeTitle || 'Trusted by growing businesses across India and the Middle East'}</p>
-        )}
-      </div>
+    <div className="clients" aria-label="Our clients" data-anim="fade-up">
+      {settings?.marqueeTitle && <p className="clients-title">{settings.marqueeTitle}</p>}
       <div className={`marquee ${settings?.grayscale === false ? '' : 'mono'}`} style={{ '--dur': `${duration}s` }}>
         <div className="marquee-track">
           <div className="marquee-set" ref={setRef}>{row.map((c, i) => item(c, i, i >= clients.length))}</div>
           <div className="marquee-set" aria-hidden="true">{row.map((c, i) => item(c, i, true))}</div>
         </div>
       </div>
-    </section>
-  )
-}
-
-function ServiceMock({ id }) {
-  if (id === 'start') {
-    const rows = [['Name reservation', 'done'], ['DSC & DIN', 'done'], ['SPICe+ incorporation', 'done'], ['PAN, TAN & bank account', 'now']]
-    return (
-      <div className="mock mini-ui">
-        <div className="mu-head"><strong>Incorporation tracker</strong><span className="pill">Private Limited</span></div>
-        <div className="progress"><i style={{ width: '78%' }} /></div>
-        <ul className="mu-steps">
-          {rows.map(([t, s]) => (
-            <li key={t} className={s}><span className="mu-dot">{s === 'done' && <Icon name="tick" size={11} strokeWidth="3" />}</span>{t}</li>
-          ))}
-        </ul>
-      </div>
-    )
-  }
-  if (id === 'manage') {
-    const rows = [['GSTR-1', 'Filed', 'ok'], ['TDS payment', 'Paid', 'ok'], ['PF & ESI', 'Filed', 'ok'], ['GSTR-3B', 'Due in 4 days', 'due']]
-    return (
-      <div className="mock mini-ui">
-        <div className="mu-head"><strong>Compliance calendar</strong><span className="pill">This month</span></div>
-        <ul className="mu-rows">
-          {rows.map(([t, s, k]) => (
-            <li key={t}><span>{t}</span><span className={`pill ${k}`}>{s}</span></li>
-          ))}
-        </ul>
-      </div>
-    )
-  }
-  const bars = [[42, 30], [50, 34], [47, 33], [58, 37], [63, 39], [72, 42]]
-  return (
-    <div className="mock mini-ui">
-      <div className="mu-head"><strong>MIS — monthly view</strong><span className="pill">Apr – Sep</span></div>
-      <div className="mu-chart">
-        {bars.map(([a, b], i) => (
-          <div key={i} className="mu-col"><i style={{ height: `${a}%` }} /><i style={{ height: `${b}%` }} /></div>
-        ))}
-      </div>
-      <div className="mu-legend"><span><i className="l1" />Revenue</span><span><i className="l2" />Expenses</span></div>
     </div>
   )
 }
 
-function Services() {
-  const [active, setActive] = useState(serviceGroups[0].id)
-  const group = serviceGroups.find((g) => g.id === active)
-  const wideTail = group.items.length % 3 === 2
+function Clients() {
   return (
-    <section className="section" id="services">
+    <section className="section" id="clients">
       <div className="container">
-        <div className="section-head reveal">
-          <span className="kicker">What we do</span>
-          <h2>Flexible solutions for every stage of your business. <span className="muted">Start right, stay compliant and make better decisions with one team behind you.</span></h2>
-        </div>
-
-        <div className="tabs reveal" role="tablist" aria-label="Service categories">
-          {serviceGroups.map((g) => (
-            <button
-              key={g.id}
-              role="tab"
-              aria-selected={active === g.id}
-              className={active === g.id ? 'active' : ''}
-              onClick={() => setActive(g.id)}
-            >
-              {g.title}
-            </button>
-          ))}
-        </div>
-
-        <div className="bento" role="tabpanel" key={group.id}>
-          <article className="tile feature">
-            <div>
-              <h3>{group.title}</h3>
-              <p>{group.blurb}</p>
-              <a href="#contact" className="link">Talk to an expert <Arrow /></a>
-            </div>
-            <ServiceMock id={group.id} />
-          </article>
-          {group.items.map((s, i) => (
-            <article
-              key={s.title}
-              className={`tile ${wideTail && i >= group.items.length - 2 ? 'wide' : ''}`}
-              style={{ '--i': i }}
-            >
-              <span className="tile-ic"><Icon name={s.icon} /></span>
-              <h3>{s.title}</h3>
-              <p>{s.text}</p>
-            </article>
-          ))}
+        <div className="section-head center" data-anim="zoom-in">
+          <span className="kicker">Industries</span>
+          <h2>Our Clients</h2>
+          <p className="lead">{clientsIntro}</p>
         </div>
       </div>
-    </section>
-  )
-}
-
-function Stats() {
-  return (
-    <section className="stats-band">
-      <div className="stats-glow" aria-hidden="true" />
-      <div className="container">
-        <div className="section-head reveal">
-          <span className="kicker on-dark">Built for owners</span>
-          <h2>The back office behind growing businesses. <span className="muted">Chartered Accountants, lawyers and MBAs working as one team for you.</span></h2>
-        </div>
-        <div className="stats">
-          {stats.map((s) => (
-            <div key={s.label} className="stat reveal">
-              <strong>{s.value}</strong>
-              <span>{s.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function Exclusive() {
-  return (
-    <section className="section" id="exclusive">
-      <div className="container">
-        <div className="section-head reveal">
-          <span className="kicker">Exclusive services</span>
-          <h2>Go beyond compliance. <span className="muted">Premium programmes for businesses that want strategic finance support without the overhead.</span></h2>
-        </div>
-        <div className="columns">
-          {exclusive.map((e, i) => (
-            <article key={e.title} className="column reveal">
-              <span className="col-num">{String(i + 1).padStart(2, '0')}</span>
-              <span className="tile-ic"><Icon name={e.icon} size={24} /></span>
-              <h3>{e.title}</h3>
-              <p>{e.text}</p>
-              <a href="#contact" className="link">Talk to us <Arrow /></a>
-            </article>
-          ))}
-        </div>
-
-        <div className="process reveal">
-          <h3 className="process-title">How we work</h3>
-          <ol>
-            {process.map((p, i) => (
-              <li key={p.title}>
-                <span className="step">{i + 1}</span>
-                <div><strong>{p.title}</strong><p>{p.text}</p></div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function About() {
-  return (
-    <section className="section tinted" id="about">
-      <div className="container about-grid">
-        <div className="reveal">
-          <span className="kicker">About us</span>
-          <h2>One partner for the entire life of your business.</h2>
-        </div>
-        <div className="reveal">
-          <p className="lead">
-            {company.legalName} is a business services and consulting firm based in Kochi. We support businesses from
-            the day they are incorporated through every stage of running them — including statutory filings and
-            compliance under labour law, HR operations, corporate law and allied statutes.
-          </p>
-          <p>
-            Our team of Chartered Accountants, lawyers and MBAs serves clients across India and the Middle East,
-            combining technical depth with practical, owner-friendly advice.
-          </p>
-          <div className="industries">
-            <span className="ind-label">Industries we serve</span>
-            <div className="chips">
-              {industries.map((i) => <span key={i} className="chip">{i}</span>)}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function Team() {
-  const initials = (n) =>
-    n.replace(/^CA\.\s*/, '').split(' ').filter((w) => /^[A-Z][a-z]/.test(w)).slice(0, 2).map((w) => w[0]).join('')
-  return (
-    <section className="section" id="team">
-      <div className="container">
-        <div className="section-head reveal">
-          <span className="kicker">Leadership</span>
-          <h2>The people behind Taxlead.</h2>
-        </div>
-        <div className="team">
-          {team.map((m) => (
-            <article key={m.name} className="member reveal">
-              <span className="avatar">{initials(m.name)}</span>
-              <div>
-                <h3>{m.name}</h3>
-                <p>{m.role}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </div>
+      <ClientMarquee />
     </section>
   )
 }
@@ -471,99 +378,65 @@ function Contact() {
     window.location.href = `mailto:${company.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   }
 
-  const allServices = [...serviceGroups.flatMap((g) => g.items), ...exclusive].map((s) => s.title)
-
   return (
-    <section className="section" id="contact">
-      <div className="container contact-grid">
-        <div className="reveal">
-          <span className="kicker">Contact us</span>
-          <h2>Let's talk about your business.</h2>
-          <p className="lead">Tell us what you need and our team will get back to you.</p>
-
-          <ul className="contact-list">
-            <li>
-              <span className="tile-ic"><Icon name="phone" size={20} /></span>
-              <div>
-                <small>Call</small>
-                <a href={company.phone.href}>{company.phone.label}</a>
-                {company.mobiles.map((m) => <a key={m.href} href={m.href}>{m.label}</a>)}
-              </div>
-            </li>
-            <li>
-              <span className="tile-ic"><Icon name="mail" size={20} /></span>
-              <div>
-                <small>Email</small>
-                <a href={`mailto:${company.email}`}>{company.email}</a>
-              </div>
-            </li>
-            <li>
-              <span className="tile-ic"><Icon name="pin" size={20} /></span>
-              <div>
-                <small>Visit</small>
-                <a href={company.mapUrl} target="_blank" rel="noopener">
-                  {company.address.map((l) => <span key={l} className="block">{l}</span>)}
-                </a>
-              </div>
-            </li>
-          </ul>
+    <section className="section tinted" id="contact">
+      <div className="container">
+        <div className="section-head center" data-anim="zoom-in">
+          <span className="kicker">Contact Us</span>
+          <h2>Get in Touch</h2>
         </div>
 
-        <form className="form reveal" onSubmit={submit}>
-          <h3>Send an enquiry</h3>
+        <div className="contact-cards">
+          <div className="contact-card" data-anim="fade-right">
+            <span className="tile-ic"><Icon name="mail" size={20} /></span>
+            <small>Email</small>
+            <a href={`mailto:${company.email}`}>{company.email}</a>
+          </div>
+          <div className="contact-card" data-anim="zoom-in">
+            <span className="tile-ic"><Icon name="phone" size={20} /></span>
+            <small>Phone</small>
+            <a href={company.phone.href}>{company.phone.label}</a>
+            {company.mobiles.map((m) => <a key={m.href} href={m.href}>{m.label}</a>)}
+          </div>
+          <div className="contact-card" data-anim="fade-left">
+            <span className="tile-ic"><Icon name="pin" size={20} /></span>
+            <small>Address</small>
+            <a href={company.mapUrl} target="_blank" rel="noopener">
+              {company.address.map((l) => <span key={l} className="block">{l}</span>)}
+            </a>
+          </div>
+        </div>
+
+        <form className="form" onSubmit={submit} data-anim="fade-up">
+          <h3>Send us a message</h3>
+          <div className="form-row">
+            <label>
+              <span>Your name</span>
+              <input required value={form.name} onChange={set('name')} autoComplete="name" />
+            </label>
+            <label>
+              <span>Phone</span>
+              <input type="tel" value={form.phone} onChange={set('phone')} autoComplete="tel" />
+            </label>
+          </div>
           <label>
-            <span>Your name</span>
-            <input required value={form.name} onChange={set('name')} autoComplete="name" />
-          </label>
-          <label>
-            <span>Phone</span>
-            <input type="tel" value={form.phone} onChange={set('phone')} autoComplete="tel" />
-          </label>
-          <label>
-            <span>Service of interest</span>
+            <span>Service</span>
             <select value={form.service} onChange={set('service')}>
               <option value="">Select a service</option>
-              {allServices.map((s) => <option key={s}>{s}</option>)}
+              {serviceGroups.map((g) => (
+                <optgroup key={g.id} label={g.title}>
+                  {g.items.map((s) => <option key={s.title}>{s.title}</option>)}
+                </optgroup>
+              ))}
             </select>
           </label>
           <label>
             <span>Message</span>
             <textarea rows="4" required value={form.message} onChange={set('message')} />
           </label>
-          <button className="btn btn-primary" type="submit">Send enquiry <Arrow /></button>
-          <small className="form-note">Opens your email app with the message ready to send.</small>
+          <button className="btn btn-primary" type="submit">Send <Arrow /></button>
+          <small className="form-note">Opens your email app with the message ready to send to {company.email}.</small>
         </form>
-      </div>
-    </section>
-  )
-}
-
-function Cta() {
-  return (
-    <section className="section cta">
-      <div className="container cta-grid reveal">
-        <div>
-          <h2>Ready to get started?</h2>
-          <p className="lead">Talk to our team about incorporation, compliance or a full eCFO programme — we'll recommend exactly what your business needs.</p>
-          <div className="hero-ctas">
-            <a href="#contact" className="btn btn-primary">Contact us <Arrow /></a>
-            <a href={company.phone.href} className="btn btn-quiet">Call {company.phone.label} <Arrow /></a>
-          </div>
-        </div>
-        <div className="cta-cards">
-          <a className="cta-card" href={company.profilePdf} target="_blank" rel="noopener">
-            <span className="tile-ic"><Icon name="download" size={20} /></span>
-            <strong>Company profile</strong>
-            <p>Download our services, team and credentials as a PDF.</p>
-            <span className="link">Download <Arrow /></span>
-          </a>
-          <a className="cta-card" href={company.mapUrl} target="_blank" rel="noopener">
-            <span className="tile-ic"><Icon name="pin" size={20} /></span>
-            <strong>Visit our office</strong>
-            <p>{company.address.slice(0, 2).join(', ')}.</p>
-            <span className="link">Get directions <Arrow /></span>
-          </a>
-        </div>
       </div>
     </section>
   )
@@ -573,9 +446,9 @@ function Footer() {
   return (
     <footer className="footer">
       <div className="container footer-grid">
-        <div className="footer-brand">
+        <div className="footer-brand" data-anim="fade-up">
           <Logo />
-          <p>{company.tagline}</p>
+          <p>{company.tagline}. {company.taglineMore}</p>
           <div className="social">
             {company.social.map((s) => (
               <a key={s.name} href={s.href} target="_blank" rel="noopener" aria-label={s.name}>
@@ -584,44 +457,38 @@ function Footer() {
             ))}
           </div>
         </div>
-        {serviceGroups.map((g) => (
-          <div key={g.id}>
-            <h4>{g.title}</h4>
-            {g.items.slice(0, 5).map((s) => <a key={s.title} href="#services">{s.title}</a>)}
-          </div>
-        ))}
-        <div>
-          <h4>Company</h4>
+        <div data-anim="fade-up">
+          <h4>Quick Links</h4>
           {nav.map((n) => <a key={n.id} href={`#${n.id}`}>{n.label}</a>)}
-          <a href={company.profilePdf} target="_blank" rel="noopener">Company profile (PDF)</a>
+        </div>
+        <div data-anim="fade-up">
+          <h4>Contact Info</h4>
+          <a href={company.mapUrl} target="_blank" rel="noopener">{company.address.join(' ')}</a>
+          <a href={company.phone.href}>{company.phone.label}</a>
+          {company.mobiles.map((m) => <a key={m.href} href={m.href}>{m.label}</a>)}
+          <a href={`mailto:${company.email}`}>{company.email}</a>
         </div>
       </div>
       <div className="container footer-bottom">
-        <span>© {new Date().getFullYear()} {company.legalName}. All rights reserved.</span>
-        <span>
-          <a href={company.phone.href}>{company.phone.label}</a> · <a href={`mailto:${company.email}`}>{company.email}</a>
-        </span>
+        <span>Copyright © {new Date().getFullYear()} {company.legalName}</span>
       </div>
     </footer>
   )
 }
 
 export default function App() {
-  useReveal()
+  useScrollAnimations()
   const [canInstall, install] = useInstallPrompt()
   return (
     <>
       <Header canInstall={canInstall} onInstall={install} />
       <main>
         <Hero />
-        <ClientMarquee />
         <Services />
-        <Stats />
-        <Exclusive />
         <About />
         <Team />
+        <Clients />
         <Contact />
-        <Cta />
       </main>
       <Footer />
     </>

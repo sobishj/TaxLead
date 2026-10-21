@@ -9,7 +9,7 @@ export const LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+x
 export const defaultSite = () => ({
   clients: [],
   scripts: [],
-  settings: { marqueeTitle: 'Trusted by growing businesses across India and the Middle East', grayscale: true, speed: 40 },
+  settings: { marqueeTitle: '', grayscale: true, speed: 40 },
   updatedAt: null,
 })
 
