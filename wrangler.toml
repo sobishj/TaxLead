@@ -8,4 +8,4 @@ compatibility_date = "2025-06-01"
 # then paste the printed id below.
 [[kv_namespaces]]
 binding = "SITE"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "bea62634a60241fca791df57c22dd1a6"
