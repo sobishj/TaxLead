@@ -1,0 +1,4 @@
+# Copy to .dev.vars for local testing with `npm run cf:dev`. Never commit .dev.vars.
+ADMIN_PASSWORD=change-me
+# Optional: separate signing key for admin sessions (defaults to ADMIN_PASSWORD).
+# SESSION_SECRET=a-long-random-string
