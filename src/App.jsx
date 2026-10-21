@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon.jsx'
 import Gradient from './Gradient.jsx'
+import logoUrl from './assets/logo.webp'
+import logoLightUrl from './assets/logo-light.webp'
 import { company, nav, serviceGroups, about, teamIntro, team, clientsIntro, sampleClients } from './data.js'
 
 /* ---------- hooks ---------- */
@@ -96,7 +98,7 @@ function Arrow() {
 }
 
 function Logo({ variant = 'dark' }) {
-  return <img src={variant === 'light' ? '/images/logo-footer.webp' : '/images/logo.webp'} alt="Taxlead" className="logo" />
+  return <img src={variant === 'light' ? logoLightUrl : logoUrl} alt="Taxlead" className="logo" />
 }
 
 function Header({ canInstall, onInstall }) {

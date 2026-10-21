@@ -29,11 +29,11 @@ void main(){
   vec2 uv=gl_FragCoord.xy/r;
   vec2 q=vec2(uv.x*r.x/r.y,uv.y)*.9;
   float s=t*.045;
-  vec3 c0=vec3(.0,.72,.87);   // Taxlead cyan (#00b8de, the "LEAD" in the logo)
-  vec3 c1=vec3(.37,.83,.94);  // light cyan
-  vec3 c2=vec3(.66,.91,.97);  // pale sky
-  vec3 c3=vec3(.12,.62,.88);  // deeper sky blue
-  vec3 c4=vec3(.89,.97,.99);  // near-white highlight
+  vec3 c0=vec3(.0,.72,.87);   // Taxlead cyan (#00b8de)
+  vec3 c1=vec3(.12,.62,.88);  // deeper sky blue
+  vec3 c2=vec3(.16,.96,.84);  // aqua-mint from the logo mark (#0affe0)
+  vec3 c3=vec3(.33,.96,.56);  // logo green (#42fa94)
+  vec3 c4=vec3(.82,.97,.28);  // logo lime-yellow (#c8ff00), softened
   vec3 col=c0;
   col=mix(col,c1,smoothstep(-.25,.55,snoise(q*vec2(.8,1.6)+vec2(s,-s*.6))));
   col=mix(col,c2,smoothstep(.0,.7,snoise(q*vec2(1.1,1.4)+vec2(-s*.8,s+3.))));

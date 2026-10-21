@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Icon from '../Icon.jsx'
+import brandLogo from '../assets/logo.webp'
 
 async function api(path, { method = 'GET', body, form } = {}) {
   const res = await fetch(path, {
@@ -43,7 +44,7 @@ function Login({ status, onDone }) {
   return (
     <div className="login-wrap">
       <form className="card login" onSubmit={submit}>
-        <img src="/images/logo.webp" alt="Taxlead" className="login-logo" />
+        <img src={brandLogo} alt="Taxlead" className="login-logo" />
         <h1>Sign in to admin</h1>
         {status && !status.configured && (
           <p className="notice warn">
@@ -367,7 +368,7 @@ function Dashboard({ onSignOut }) {
   return (
     <div className="shell">
       <aside className="side">
-        <img src="/images/logo.webp" alt="Taxlead" className="side-logo" />
+        <img src={brandLogo} alt="Taxlead" className="side-logo" />
         <nav>
           {TABS.map((t) => (
             <button key={t.id} className={tab === t.id ? 'active' : ''} onClick={() => setTab(t.id)}>

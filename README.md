@@ -77,4 +77,4 @@ Locally, KV data is stored in `.wrangler/` and never touches production.
 ## Other notes
 
 - The contact form opens the visitor's email app with the enquiry filled in. To receive submissions directly, point it at Formspree or Web3Forms, or add another Pages Function.
-- To change the app icon, edit `public/icon.svg` and run `npm run icons -- --override`.
+- Logos live in `src/assets/` (header/footer/admin). They are imported through Vite, so a replaced logo gets a new hashed URL and is never served stale from cache. App and browser icons (`public/favicon.ico`, `icon.svg`, `pwa-*.png`, `apple-touch-icon-180x180.png`, `maskable-icon-512x512.png`) are generated from the logo mark — replace those files to change them.

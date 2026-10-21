@@ -93,7 +93,8 @@ a:hover .ha-tip, button:hover .ha-tip { transform: translateX(3px); }
 }
 .header-inner { display: flex; align-items: center; gap: 32px; height: 72px; }
 .brand { flex: none; }
-.logo { height: 26px; width: auto; }
+.logo { height: 38px; width: auto; }
+@media (max-width: 600px) { .logo { height: 34px; } }
 .nav-links { display: flex; gap: 4px; flex: 1; }
 .nav-links a {
   color: var(--ink); font-weight: 500; font-size: 15px; padding: 8px 12px; border-radius: 8px;
@@ -131,7 +132,7 @@ a:hover .ha-tip, button:hover .ha-tip { transform: translateX(3px); }
   clip-path: polygon(46% 0, 100% 0, 100% 100%, 0 100%);
   -webkit-mask-image: linear-gradient(100deg, transparent 0%, #000 30%);
   mask-image: linear-gradient(100deg, transparent 0%, #000 30%);
-  background: linear-gradient(160deg, #a8e9f8 0%, #00b8de 40%, #5fd4f0 70%, #e3f8fd 100%);
+  background: linear-gradient(160deg, #1e9fe0 0%, #00b8de 30%, #29f5d6 55%, #54f58f 78%, #d1f747 100%);
 }
 .gradient-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1s; }
 .gradient-canvas.ready { opacity: 1; }

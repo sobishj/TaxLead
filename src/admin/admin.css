@@ -49,7 +49,7 @@ label small { font-weight: 400; color: var(--muted); }
 /* login */
 .login-wrap { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 16px; background: linear-gradient(160deg, #e9f9fd, #eef1ff 50%, #f7f0ff); }
 .login { width: 100%; max-width: 380px; padding: 32px; display: grid; gap: 16px; box-shadow: var(--shadow-lg); }
-.login-logo { height: 24px; width: auto; }
+.login-logo { height: 30px; width: auto; }
 .login h1 { font-size: 22px; }
 .login .btn { padding: 12px; }
 .back { font-size: 14px; color: var(--muted); text-align: center; }
@@ -57,7 +57,7 @@ label small { font-weight: 400; color: var(--muted); }
 /* shell */
 .shell { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
 .side { background: #fff; border-right: 1px solid var(--line); padding: 24px 16px; display: flex; flex-direction: column; gap: 24px; position: sticky; top: 0; height: 100vh; }
-.side-logo { height: 22px; width: auto; align-self: flex-start; margin-left: 10px; }
+.side-logo { height: 28px; width: auto; align-self: flex-start; margin-left: 10px; }
 .side nav { display: grid; gap: 2px; }
 .side nav button, .side-foot button {
   display: flex; align-items: center; gap: 10px; font: inherit; font-weight: 500; color: var(--ink-2);
